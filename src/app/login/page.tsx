@@ -26,10 +26,7 @@ export default async function LoginPage({
 
         <form className="space-y-4">
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
               Email
             </label>
             <input
@@ -43,10 +40,7 @@ export default async function LoginPage({
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
               Password
             </label>
             <input

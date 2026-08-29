@@ -31,10 +31,7 @@ export default async function SignupPage({
 
         <form className="space-y-4">
           <div>
-            <label
-              htmlFor="fullName"
-              className="mb-1 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-slate-700">
               Full name
             </label>
             <input
@@ -48,10 +45,7 @@ export default async function SignupPage({
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
               Email
             </label>
             <input
@@ -65,10 +59,7 @@ export default async function SignupPage({
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
               Password
             </label>
             <input
