@@ -4,6 +4,7 @@ import { signout } from '../login/actions'
 import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
 import SummaryCards from './SummaryCards'
+import BankAccountsPanel from './BankAccountsPanel'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -23,6 +24,11 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
 
   const safeTransactions = transactions ?? []
+
+  const { data: bankAccounts } = await supabase
+    .from('bank_accounts')
+    .select('id, institution_name, account_number, last_synced_at')
+    .order('created_at', { ascending: false })
 
   const totalIncome = safeTransactions
     .filter((t) => t.type === 'income')
@@ -53,6 +59,13 @@ export default async function DashboardPage() {
         </div>
 
         <SummaryCards totalIncome={totalIncome} totalExpenses={totalExpenses} />
+
+        <div className="mb-6">
+          <BankAccountsPanel
+            bankAccounts={bankAccounts ?? []}
+            monoPublicKey={process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY ?? ''}
+          />
+        </div>
 
         {error && (
           <div className="mb-6 rounded-md bg-red-50 px-4 py-3 text-sm text-red-600">
