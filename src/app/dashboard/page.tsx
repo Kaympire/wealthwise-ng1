@@ -5,6 +5,9 @@ import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
 import SummaryCards from './SummaryCards'
 import BankAccountsPanel from './BankAccountsPanel'
+import BudgetsPanel from './BudgetsPanel'
+import CategoryBreakdownChart from './CategoryBreakdownChart'
+import MonthlyTrendChart from './MonthlyTrendChart'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -38,6 +41,43 @@ export default async function DashboardPage() {
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0)
 
+  const { data: budgets } = await supabase
+    .from('budgets')
+    .select('id, category, monthly_limit')
+    .order('category', { ascending: true })
+
+  const now = new Date()
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+
+  const spendingByCategory: Record<string, number> = {}
+  for (const t of safeTransactions) {
+    if (t.type !== 'expense') continue
+    const monthKey = t.transaction_date.slice(0, 7)
+    if (monthKey !== currentMonthKey) continue
+    spendingByCategory[t.category] =
+      (spendingByCategory[t.category] ?? 0) + Number(t.amount)
+  }
+
+  // Build a 6-month income/expense trend, oldest to newest
+  const monthBuckets: { key: string; month: string; income: number; expenses: number }[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    monthBuckets.push({
+      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+      month: d.toLocaleDateString('en-NG', { month: 'short' }),
+      income: 0,
+      expenses: 0,
+    })
+  }
+  const bucketByKey = Object.fromEntries(monthBuckets.map((b) => [b.key, b]))
+  for (const t of safeTransactions) {
+    const monthKey = t.transaction_date.slice(0, 7)
+    const bucket = bucketByKey[monthKey]
+    if (!bucket) continue
+    if (t.type === 'income') bucket.income += Number(t.amount)
+    else bucket.expenses += Number(t.amount)
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-5xl">
@@ -64,6 +104,18 @@ export default async function DashboardPage() {
           <BankAccountsPanel
             bankAccounts={bankAccounts ?? []}
             monoPublicKey={process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY ?? ''}
+          />
+        </div>
+
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <CategoryBreakdownChart spendingByCategory={spendingByCategory} />
+          <MonthlyTrendChart data={monthBuckets} />
+        </div>
+
+        <div className="mb-6">
+          <BudgetsPanel
+            budgets={budgets ?? []}
+            spendingByCategory={spendingByCategory}
           />
         </div>
 
