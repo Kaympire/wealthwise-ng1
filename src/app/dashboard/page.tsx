@@ -8,6 +8,7 @@ import BankAccountsPanel from './BankAccountsPanel'
 import BudgetsPanel from './BudgetsPanel'
 import CategoryBreakdownChart from './CategoryBreakdownChart'
 import MonthlyTrendChart from './MonthlyTrendChart'
+import FinancialAssistant from './FinancialAssistant'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -20,11 +21,11 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  const { data: transactions, error } = await supabase
+  const { data: transactions } = await supabase
     .from('transactions')
     .select('id, type, amount, category, description, transaction_date')
+    .eq('user_id', user.id)
     .order('transaction_date', { ascending: false })
-    .order('created_at', { ascending: false })
 
   const safeTransactions = transactions ?? []
 
@@ -54,11 +55,9 @@ export default async function DashboardPage() {
     if (t.type !== 'expense') continue
     const monthKey = t.transaction_date.slice(0, 7)
     if (monthKey !== currentMonthKey) continue
-    spendingByCategory[t.category] =
-      (spendingByCategory[t.category] ?? 0) + Number(t.amount)
+    spendingByCategory[t.category] = (spendingByCategory[t.category] ?? 0) + Number(t.amount)
   }
 
-  // Build a 6-month income/expense trend, oldest to newest
   const monthBuckets: { key: string; month: string; income: number; expenses: number }[] = []
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
@@ -80,7 +79,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">
@@ -101,6 +100,10 @@ export default async function DashboardPage() {
         <SummaryCards totalIncome={totalIncome} totalExpenses={totalExpenses} />
 
         <div className="mb-6">
+          <FinancialAssistant />
+        </div>
+
+        <div className="mb-6">
           <BankAccountsPanel
             bankAccounts={bankAccounts ?? []}
             monoPublicKey={process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY ?? ''}
@@ -113,28 +116,14 @@ export default async function DashboardPage() {
         </div>
 
         <div className="mb-6">
-          <BudgetsPanel
-            budgets={budgets ?? []}
-            spendingByCategory={spendingByCategory}
-          />
+          <BudgetsPanel budgets={budgets ?? []} spendingByCategory={spendingByCategory} />
         </div>
 
-        {error && (
-          <div className="mb-6 rounded-md bg-red-50 px-4 py-3 text-sm text-red-600">
-            Could not load transactions: {error.message}. Make sure the
-            transactions table has been created in Supabase (see
-            supabase/migrations/001_transactions.sql).
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <TransactionForm />
-          </div>
-          <div className="lg:col-span-2">
-            <TransactionList transactions={safeTransactions} />
-          </div>
+        <div className="mb-6">
+          <TransactionForm />
         </div>
+
+        <TransactionList transactions={safeTransactions} />
       </div>
     </div>
   )

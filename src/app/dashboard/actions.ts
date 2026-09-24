@@ -15,25 +15,18 @@ export async function addTransaction(formData: FormData) {
   }
 
   const type = formData.get('type') as string
-  const amount = parseFloat(formData.get('amount') as string)
-  const categoryPreset = formData.get('category') as string
-  const customCategory = (formData.get('customCategory') as string) ?? ''
-  const description = (formData.get('description') as string) ?? ''
-  const transaction_date = formData.get('transaction_date') as string
+  const amount = Number(formData.get('amount'))
+  let category = formData.get('category') as string
+  const customCategory = formData.get('customCategory') as string
+  const description = formData.get('description') as string
+  const transactionDate = formData.get('transactionDate') as string
 
-  const category =
-    categoryPreset === 'Other' && customCategory.trim()
-      ? customCategory.trim()
-      : categoryPreset
+  if (category === 'Other' && customCategory?.trim()) {
+    category = customCategory.trim()
+  }
 
-  if (!type || !['income', 'expense'].includes(type)) {
-    return { error: 'Invalid transaction type.' }
-  }
-  if (!amount || amount <= 0) {
-    return { error: 'Amount must be greater than 0.' }
-  }
-  if (!category) {
-    return { error: 'Category is required.' }
+  if (!type || !amount || amount <= 0 || !category) {
+    return { error: 'Please fill in all required fields with valid values.' }
   }
 
   const { error } = await supabase.from('transactions').insert({
@@ -41,8 +34,9 @@ export async function addTransaction(formData: FormData) {
     type,
     amount,
     category,
-    description,
-    transaction_date: transaction_date || new Date().toISOString().split('T')[0],
+    description: description || null,
+    transaction_date: transactionDate || new Date().toISOString().slice(0, 10),
+    source: 'manual',
   })
 
   if (error) {

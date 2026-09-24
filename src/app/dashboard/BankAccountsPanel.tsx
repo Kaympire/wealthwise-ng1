@@ -98,14 +98,10 @@ export default function BankAccountsPanel({
       </div>
 
       {error && (
-        <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </div>
+        <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>
       )}
       {message && (
-        <div className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-          {message}
-        </div>
+        <div className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>
       )}
 
       {bankAccounts.length === 0 ? (

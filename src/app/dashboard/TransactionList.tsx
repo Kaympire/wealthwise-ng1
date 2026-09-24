@@ -69,8 +69,8 @@ export default function TransactionList({
 
   if (transactions.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-400">
-        No transactions yet — add your first one on the left.
+      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-400">
+        No transactions yet. Add your first one above.
       </div>
     )
   }
@@ -97,42 +97,33 @@ export default function TransactionList({
         </div>
       )}
       <table className="w-full text-sm">
-        <thead className="bg-slate-50 text-left text-slate-500">
-          <tr>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Category</th>
-            <th className="px-4 py-3 font-medium">Description</th>
-            <th className="px-4 py-3 text-right font-medium">Amount</th>
-            <th className="px-4 py-3"></th>
+        <thead>
+          <tr className="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-400">
+            <th className="px-4 py-3">Date</th>
+            <th className="px-4 py-3">Category</th>
+            <th className="px-4 py-3">Description</th>
+            <th className="px-4 py-3 text-right">Amount</th>
+            <th className="px-4 py-3 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody>
           {transactions.map((t) => (
-            <tr key={t.id} className="hover:bg-slate-50">
-              <td className="px-4 py-3 whitespace-nowrap text-slate-600">
+            <tr key={t.id} className="border-b border-slate-50 last:border-0">
+              <td className="px-4 py-3 text-slate-500">
                 {new Date(t.transaction_date).toLocaleDateString('en-NG', {
-                  day: 'numeric',
+                  day: '2-digit',
                   month: 'short',
-                  year: 'numeric',
                 })}
               </td>
               <td className="px-4 py-3">
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    t.type === 'income'
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-red-50 text-red-700'
-                  }`}
-                >
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                   {t.category}
                 </span>
               </td>
-              <td className="px-4 py-3 text-slate-500">
-                {t.description || '—'}
-              </td>
+              <td className="px-4 py-3 text-slate-500">{t.description ?? '—'}</td>
               <td
                 className={`px-4 py-3 text-right font-medium whitespace-nowrap ${
-                  t.type === 'income' ? 'text-green-700' : 'text-red-700'
+                  t.type === 'income' ? 'text-emerald-600' : 'text-red-600'
                 }`}
               >
                 {t.type === 'income' ? '+' : '-'}

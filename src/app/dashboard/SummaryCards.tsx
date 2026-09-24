@@ -14,30 +14,24 @@ export default function SummaryCards({
 }) {
   const balance = totalIncome - totalExpenses
 
+  const cards = [
+    { label: 'Total Income', value: totalIncome, color: 'text-emerald-600' },
+    { label: 'Total Expenses', value: totalExpenses, color: 'text-red-600' },
+    {
+      label: 'Balance',
+      value: balance,
+      color: balance >= 0 ? 'text-slate-900' : 'text-red-600',
+    },
+  ]
+
   return (
     <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-slate-500">Total Income</p>
-        <p className="mt-1 text-2xl font-semibold text-green-700">
-          {formatNaira(totalIncome)}
-        </p>
-      </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-slate-500">Total Expenses</p>
-        <p className="mt-1 text-2xl font-semibold text-red-700">
-          {formatNaira(totalExpenses)}
-        </p>
-      </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-slate-500">Balance</p>
-        <p
-          className={`mt-1 text-2xl font-semibold ${
-            balance >= 0 ? 'text-slate-900' : 'text-red-700'
-          }`}
-        >
-          {formatNaira(balance)}
-        </p>
-      </div>
+      {cards.map((c) => (
+        <div key={c.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{c.label}</p>
+          <p className={`mt-1 text-2xl font-semibold ${c.color}`}>{formatNaira(c.value)}</p>
+        </div>
+      ))}
     </div>
   )
 }

@@ -44,6 +44,7 @@ export default function BudgetsPanel({
       }
     })
   }
+
   function handleDelete(id: string) {
     startTransition(async () => {
       await deleteBudget(id)
@@ -53,9 +54,7 @@ export default function BudgetsPanel({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Monthly budgets
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-900">Monthly budgets</h2>
         {availableCategories.length > 0 && (
           <button
             onClick={() => setShowForm((v) => !v)}
@@ -67,9 +66,7 @@ export default function BudgetsPanel({
       </div>
 
       {error && (
-        <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </div>
+        <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>
       )}
 
       {showForm && (
@@ -78,9 +75,7 @@ export default function BudgetsPanel({
           className="mb-5 flex flex-wrap items-end gap-3 rounded-lg bg-slate-50 p-4"
         >
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Category
-            </label>
+            <label className="mb-1 block text-xs font-medium text-slate-600">Category</label>
             <select
               name="category"
               required
@@ -126,10 +121,7 @@ export default function BudgetsPanel({
         <div className="space-y-4">
           {budgets.map((b) => {
             const spent = spendingByCategory[b.category] ?? 0
-            const percent = Math.min(
-              100,
-              Math.round((spent / b.monthly_limit) * 100)
-            )
+            const percent = Math.min(100, Math.round((spent / b.monthly_limit) * 100))
             const over = spent > b.monthly_limit
             const barColor = over
               ? 'bg-red-500'
@@ -140,14 +132,8 @@ export default function BudgetsPanel({
             return (
               <div key={b.id}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-900">
-                    {b.category}
-                  </span>
-                  <span
-                    className={
-                      over ? 'font-medium text-red-600' : 'text-slate-500'
-                    }
-                  >
+                  <span className="font-medium text-slate-900">{b.category}</span>
+                  <span className={over ? 'font-medium text-red-600' : 'text-slate-500'}>
                     {formatNaira(spent)} / {formatNaira(b.monthly_limit)}
                     {over && ' — over budget'}
                   </span>

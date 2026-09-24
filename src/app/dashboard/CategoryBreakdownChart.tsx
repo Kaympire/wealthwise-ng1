@@ -3,16 +3,8 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 const COLORS = [
-  '#6366f1',
-  '#f59e0b',
-  '#10b981',
-  '#ef4444',
-  '#3b82f6',
-  '#ec4899',
-  '#8b5cf6',
-  '#14b8a6',
-  '#f97316',
-  '#64748b',
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#3b82f6',
+  '#ec4899', '#8b5cf6', '#14b8a6', '#f97316', '#64748b',
 ]
 
 const formatNaira = (n: number) =>
@@ -35,12 +27,8 @@ export default function CategoryBreakdownChart({
   if (data.length === 0) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">
-          Spending by category
-        </h2>
-        <p className="text-sm text-slate-400">
-          No expenses recorded yet this period.
-        </p>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Spending by category</h2>
+        <p className="text-sm text-slate-400">No expenses recorded yet this period.</p>
       </div>
     )
   }
@@ -67,12 +55,7 @@ export default function CategoryBreakdownChart({
             ))}
           </Pie>
           <Tooltip formatter={(value) => formatNaira(Number(value ?? 0))} />
-          <Legend
-            layout="vertical"
-            align="right"
-            verticalAlign="middle"
-            wrapperStyle={{ fontSize: 12 }}
-          />
+          <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
         </PieChart>
       </ResponsiveContainer>
     </div>

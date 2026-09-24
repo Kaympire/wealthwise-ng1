@@ -28,7 +28,6 @@ export async function connectBankAccount(monoCode: string) {
     })
 
     if (error) {
-      // Account already linked (unique constraint) or other db error
       return { error: error.message }
     }
 
@@ -67,7 +66,7 @@ export async function syncBankTransactions(bankAccountId: string) {
     const rows = transactions.map((t) => ({
       user_id: user.id,
       type: t.type === 'credit' ? 'income' : 'expense',
-      amount: t.amount / 100, // kobo -> naira
+      amount: t.amount / 100,
       category: mapMonoCategory(t.category),
       description: t.narration,
       transaction_date: t.date.split('T')[0],
@@ -77,7 +76,6 @@ export async function syncBankTransactions(bankAccountId: string) {
     }))
 
     if (rows.length > 0) {
-      // external_id has a unique constraint, so re-syncing skips duplicates
       const { error: insertError } = await supabase
         .from('transactions')
         .upsert(rows, { onConflict: 'external_id', ignoreDuplicates: true })
